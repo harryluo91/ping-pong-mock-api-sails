@@ -18,11 +18,6 @@ module.exports = {
     },
     ranking: {
       type: 'string'
-    },
-    matches: {
-      collection: 'match',
-      via: 'players',
-      dominant: true
     }
   }
 };

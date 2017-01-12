@@ -28,12 +28,14 @@ var createPlayer = function(req, res) {
 }
 
 var getPlayers = function(req, res) {
+    console.log('test')
     Player.find().exec(function(err, players) {
         if (!err && players) {
             return res.json(200, {
                 data: players
             });
         } else {
+            console.log(err)
             return res.json(404, err);
         }
     })
