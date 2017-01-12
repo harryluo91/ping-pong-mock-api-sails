@@ -2,6 +2,7 @@ var async = require('async');
 /*
 	globals
     Player:true
+    Match:true
     Promise: true
 */
 
@@ -18,7 +19,39 @@ const PLAYERS = [
     }
 ];
 
-var generatePlayers = function() {
+const MATCHES = [
+    {
+        playerOnePoints: 11,
+        playerTwoPoints: 8, 
+    },
+    {
+        playerOnePoints: 11,
+        playerTwoPoints: 6,
+    }
+]
+
+var sailsLoader = function(cb) {
+    return new Promise(function(resolve, reject) {
+        require('sails').load(function(err, sails) {
+            if (!err && sails) {
+                cb(sails);
+            } else {
+                sails.log('Error loading sails context.');
+                reject(err);
+            }
+        })
+    })
+}
+
+var clearData = function(sails, cb) {
+    Player.destroy({}).exec(function(destroyErr) {
+        if (!destroyErr) {
+            cb(sails);
+        };
+    });
+};
+
+var generatePlayers = function(sails, cb) {
     var tasks = [];
     return new Promise(function(parentResolve, parentReject) {
         require('sails').load(function(err, sails) {
@@ -46,6 +79,7 @@ var generatePlayers = function() {
                                 ranking: player.ranking,
                             }).exec(function(createPlayerErr, createdPlayer) {
                                 if (!createPlayerErr && createdPlayer) {
+                                    createdPlayer.
                                     resolve(); 
                                 } else {
                                     reject();
@@ -70,6 +104,11 @@ var generatePlayers = function() {
             });
         });
     });
+}
+
+var generateMatches = function() {
+    var task = [];
+
 }
 
 if (require.main === module) {
