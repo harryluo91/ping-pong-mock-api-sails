@@ -53,6 +53,6 @@ module.exports.routes = {
   'delete /api/players/:playerId': 'PlayerController.deletePlayer',
 
   // Match
-  'get /api/matches': 'MatchController.getMatches',
+  'get /api/matches/:playerId': 'MatchController.getPlayerMatches',
 
 };

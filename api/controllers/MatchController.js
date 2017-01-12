@@ -12,8 +12,15 @@
 	Promise
 */
 
-var getMatches = function(req, res) {
-    Match.find().populate('playerOne').populate('playerTwo').exec(function(err, matches) {
+var getPlayerMatches = function(req, res) {
+    var playerId = req.params.playerId;
+    Match.find({
+        or : [
+            { playerOne: playerId },
+            { playerTwo: playerId }
+        ]
+    })
+    .populate('playerOne').populate('playerTwo').exec(function(err, matches) {
         if (!err && matches) {
             return res.json(
                 200,
@@ -29,6 +36,6 @@ var getMatches = function(req, res) {
 }
 
 module.exports = {
-	getMatches: getMatches
+	getPlayerMatches: getPlayerMatches
 };
 
