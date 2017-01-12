@@ -45,10 +45,14 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-
+  // Player
   'post /api/players': 'PlayerController.createPlayer',
   'get /api/players': 'PlayerController.getPlayers',
   'get /api/players/:playerId': 'PlayerController.getPlayerById',
   'put /api/players/:playerId': 'PlayerController.editPlayer',
-  'delete /api/players/:playerId': 'PlayerController.deletePlayer'
+  'delete /api/players/:playerId': 'PlayerController.deletePlayer',
+
+  // Match
+  'get /api/matches': 'MatchController.getMatches',
+
 };

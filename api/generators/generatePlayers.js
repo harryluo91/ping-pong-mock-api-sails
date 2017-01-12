@@ -21,10 +21,14 @@ const PLAYERS = [
 
 const MATCHES = [
     {
+        playerOne: 'Kobe',
+        playerTwo: 'Lebron',
         playerOnePoints: 11,
         playerTwoPoints: 8, 
     },
     {
+        playerOne: 'Kobe',
+        playerTwo: 'Lebron',
         playerOnePoints: 11,
         playerTwoPoints: 6,
     }
@@ -52,9 +56,9 @@ var clearData = function(sails, cb) {
 };
 
 var generatePlayers = function(sails, cb) {
-    var builders = [];
+    var playerBuilders = [];
     PLAYERS.forEach(function(player) {
-        builders.push(
+        playerBuilders.push(
             new Promise (function(resolve, reject) {
                 Player.create({
                     firstName: player.firstName,
@@ -70,23 +74,64 @@ var generatePlayers = function(sails, cb) {
             })
         );
     });
-    Promise.all(builders).then(function() {
+    Promise.all(playerBuilders).then(function() {
         cb(null, sails);
     }).catch(function(err) {
         cb(err);
     })
 }
 
+var generateMatches = function(sails, cb) {
+    var matchBuilders = [];
+    MATCHES.forEach(function(match) {
+        matchBuilders.push(
+            new Promise (function(resolve, reject) {
+                var firstPlayer;
+                var secondPlayer;
+                Player.findOne({
+                    firstName: match.playerOne
+                }).exec(function(err, player) {
+                    if (!err && player) {
+                        firstPlayer = player;
+                        Player.findOne({
+                            firstName: match.playerTwo
+                        }).exec(function(err2, player2) {
+                            if (!err2 && player2) {
+                                Match.create({
+                                    playerOne: player,
+                                    playerTwo: player2,
+                                    playerOnePoints: match.playerOnePoints,
+                                    playerTwoPoints: match.playerTwoPoints
+                                }).exec(function(createMatchErr, createdMatch) {
+                                    if (!createMatchErr && createdMatch) {
+                                        sails.log(createdMatch)
+                                        resolve();
+                                    } else {
+                                        reject(createMatchErr);
+                                    }
+                                })
+                            } else {
+                                reject(err2)
+                            }
+                        })
+                    } else {
+                        reject(err);
+                    }
+                });
+            })
+        )
+    });
+    Promise.all(matchBuilders).then(function() {
+        cb(null);
+    }).catch(function(err) {
+        cb(err);
+    })
+}
+
 if (require.main === module) {
-    async.waterfall([sailsLoader, clearData, generatePlayers], function(runTasksErr, result) {
+    async.waterfall([sailsLoader, clearData, generatePlayers, generateMatches], function(runTasksErr, result) {
         if (!runTasksErr) {
-            Player.find().exec(function(err, res) {
-                if (!err && res) {
-                    console.log(res);
-                    process.exit(0);
-                }
-            });
-            
+            process.exit(0);
         } else {
             console.log(runTasksErr);
             process.exit(1);
