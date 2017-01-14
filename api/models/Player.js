@@ -18,6 +18,9 @@ module.exports = {
     },
     ranking: {
       type: 'string'
+    },
+    avatar: {
+      type: 'string'
     }
   }
 };

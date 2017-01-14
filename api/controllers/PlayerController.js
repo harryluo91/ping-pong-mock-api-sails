@@ -1,3 +1,4 @@
+var async = require('async');
 /**
  * PlayerController
  *
@@ -77,15 +78,61 @@ var editPlayer = function(req, res) {
     });
 }
 
-var deletePlayer = function(req, res) {
-    var playerId = req.params.playerId;
+var removeMatchRecord = function(playerId, cb) {
+    Player.findOne({
+        id: playerId
+    }).exec(function(err, player) {
+        if (!err && player) {
+            Match.destroy({
+                or : [
+                    { playerOne: player.id },
+                    { playerTwo: player.id }
+                ]
+            }).exec(function(destroyErr) {
+                if (!destroyErr) {
+                    cb(null, playerId);
+                } else {
+                    cb(destroyErr);
+                }
+            })
+        } else {
+            cb(err);
+        }
+    })
+}
+
+var removePlayerRecord = function(playerId, cb) {
     Player.destroy({
         id: playerId,
     }).exec(function(err) {
         if (!err) {
-            return res.json(200);
+            cb(null);
         } else {
-            return res.json(404, err);
+            cb(err);
+        }
+    })
+}
+
+var deletePlayer = function(req, res) {
+    var playerId = req.params.playerId;
+    async.waterfall([
+        function(callback) {
+            callback(null, playerId);
+        },
+        removeMatchRecord,
+        removePlayerRecord
+    ],
+    function(runTasksErr) {
+        if (!runTasksErr) {
+            return res.json(
+                200,
+                'Player destroyed'
+            )
+        } else {
+            return res.json(
+                400,
+                runTasksErr
+            )
         }
     })
 }
