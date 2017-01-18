@@ -11,61 +11,61 @@ const PLAYERS = [
     {
         firstName: 'Michael',
         lastName: 'Clarke',
-        ranking: '1',
+        ranking: 1,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/62-1467395065.jpg'
     },
     {
         firstName: 'Kyle',
         lastName: 'Bryce',
-        ranking: '2',
+        ranking: 2,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1274-201610061349168047.jpg'
     },
     {
         firstName: 'James',
         lastName: 'O\'Connell',
-        ranking: '3',
+        ranking: 3,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/51-1467395065.jpg'
     },
     {
         firstName: 'Nikola',
         lastName: 'Kramaric',
-        ranking: '4',
+        ranking: 4,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/68-1467395065.jpg'
     },
     {
         firstName: 'Kenneth',
         lastName: 'Hou',
-        ranking: '5',
+        ranking: 5,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/16-1467395065.jpg'
     },
     {
         firstName: 'Jani',
         lastName: 'Tuomi',
-        ranking: '6',
+        ranking: 6,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1203-1467395065.jpg'
     },
     {
         firstName: 'Harry',
         lastName: 'Luo',
-        ranking: '7',
+        ranking: 7,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1261-1467395065.jpg'
     },
     {
         firstName: 'Mike',
         lastName: 'Hass',
-        ranking: '8',
+        ranking: 8,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1360-201611251209287393.jpg'
     },
     {
         firstName: 'Evan',
         lastName: 'Skeete',
-        ranking: '9',
+        ranking: 9,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1305-1467395065.jpg'
     },
     {
         firstName: 'Ryan',
         lastName: 'Russell',
-        ranking: '10',
+        ranking: 10,
         avatar: 'https://eef6f43bd3430e28fae6-ea0c2ccfe9842a2d35335186b2bf66d9.ssl.cf2.rackcdn.com/production/profile-pictures/1228-1467395065.jpg'
     }
 ];
@@ -244,7 +244,21 @@ var generateMatches = function(sails, cb) {
                                     playerTwoPoints: match.playerTwoPoints
                                 }).exec(function(createMatchErr, createdMatch) {
                                     if (!createMatchErr && createdMatch) {
-                                        resolve();
+                                        player.matches.add(createdMatch.id);
+                                        player.save(function(saveError) {
+                                            if (!err) {
+                                                player2.matches.add(createdMatch.id);
+                                                player2.save(function(saveError2) {
+                                                    if (!saveError2) {
+                                                        resolve();
+                                                    } else {
+                                                        reject(saveError2);
+                                                    }
+                                                })
+                                            } else {
+                                                reject(saveError)
+                                            }
+                                        })
                                     } else {
                                         reject(createMatchErr);
                                     }

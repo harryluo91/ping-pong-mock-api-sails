@@ -27,7 +27,7 @@
   "scripts": {
     "debug": "node debug app.js",
     "start": "npm run generate && node app.js",
-    "generate": "node ./api/generators/generatePlayers.js"
+    "generate": "node ./api/generators/generators.js"
   },
   "main": "app.js",
   "repository": {

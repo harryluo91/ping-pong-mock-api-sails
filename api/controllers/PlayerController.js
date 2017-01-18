@@ -13,17 +13,25 @@ var async = require('async');
 */
 
 var createPlayer = function(req, res) {
-    Player.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName
-    }).exec(function(err, player) {
-        if (!err && player) {
-            return res.json(
-                200,
-                {data: player}
-            );
+    Player.find().max('ranking').exec(function(error, foundNum) {
+        console.log(foundNum)
+        if (!error && foundNum) {
+            Player.create({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                ranking: foundNum[0] ? (foundNum[0].ranking + 1) : 1,
+            }).exec(function(err, player) {
+                if (!err && player) {
+                    return res.json(
+                        200,
+                        {data: player}
+                    );
+                } else {
+                    return res.json(404, err);
+                }
+            })
         } else {
-            return res.json(404, err);
+            return res.json(404, error);
         }
     })
 }
@@ -41,17 +49,41 @@ var getPlayers = function(req, res) {
     })
 }
 
+// var getPlayerById = function(req, res) {
+//     Player.findOne({
+//         id: req.params.playerId,
+//     }).exec(function(err, player) {
+//         if (!err && player) {
+//             return res.json(
+//                 200,
+//                 {
+//                     data: player
+//                 }
+//             )
+//         } else {
+//             return res.json(404, err);
+//         }
+//     })
+// }
+
 var getPlayerById = function(req, res) {
     Player.findOne({
         id: req.params.playerId,
-    }).exec(function(err, player) {
+    }).populate('matches').exec(function(err, player) {
         if (!err && player) {
-            return res.json(
-                200,
-                {
-                    data: player
-                }
-            )
+            playerService.getPlayersHelper({
+                player: player,
+                matches: player.matches
+            }).then(function() {
+                return res.json(
+                    200,
+                    {
+                        data: player
+                    }
+                )
+            }).catch(function(error) {
+                return res.json(404, error);
+            })
         } else {
             return res.json(404, err);
         }

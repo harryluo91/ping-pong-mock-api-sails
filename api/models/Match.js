@@ -21,6 +21,10 @@ module.exports = {
     },
     playerTwoPoints: {
         type: 'string'
+    },
+    players: {
+        collection: 'player',
+        via: 'matches'
     }
   }
 };

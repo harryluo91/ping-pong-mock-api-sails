@@ -17,10 +17,15 @@ module.exports = {
       required: true
     },
     ranking: {
-      type: 'string'
+      type: 'integer'
     },
     avatar: {
       type: 'string'
+    },
+    matches: {
+      collection: 'match',
+      via: 'players',
+      dominant: true
     }
   }
 };
