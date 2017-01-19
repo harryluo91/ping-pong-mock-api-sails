@@ -52,7 +52,6 @@ var getPlayerMatches = function(req, res) {
 }
 
 var editMatchScores = function(req, res) {
-    console.log(req.data)
     var matchId = req.params.matchId;
     Match.update({
         id: matchId
